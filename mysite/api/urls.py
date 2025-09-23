@@ -8,7 +8,8 @@ router.register(r"login", views.LoginViewSet, basename="login",)
 router.register(r"token_auth", views.TokenAuthenticateViewSet, basename="token_auth",)
 router.register(r"logout", views.LogoutViewSet, basename="logout",)
 router.register(r"profile", views.ProfileViewSet, basename="profile",)
-router.register(r"questions", views.QuestionsViewSet, basename="questions",)
+router.register(r"questions", views.QuestionViewSet, basename="questions",)
+router.register(r"answers", views.AnswerViewSet, basename="answers",)
 
 urlpatterns = [
     path("", include(router.urls)),

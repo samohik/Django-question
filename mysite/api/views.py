@@ -13,9 +13,11 @@ from rest_framework.viewsets import (
     GenericViewSet, ModelViewSet,
 )
 
+from answers.models import Answer
+from answers.serializers import AnswerSerializer
 from api.utils import create_jwt, decode_jwt
 from question.models import Question
-from question.serializers import QuestionSerializer
+from question.serializers import QuestionSerializer, QuestionDetailSerializer
 from users.models import Profile
 from users.serializers import RegistrationSerializer, LoginSerializer, ProfileSerializer
 
@@ -199,10 +201,9 @@ class LogoutViewSet(ViewSet):
         return response
 
 
-class QuestionsViewSet(GenericViewSet):
-    # .prefetch_related()
-    queryset = Question.objects.prefetch_related(
-        "question_answer",
+class QuestionViewSet(GenericViewSet):
+    queryset = Question.objects.select_related(
+        "created_by",
     ).all()
     serializer_class = QuestionSerializer
 
@@ -217,9 +218,7 @@ class QuestionsViewSet(GenericViewSet):
         )
 
     def retrieve(self, request: Request, pk):
-        question = self.queryset.filter(id=pk).first()
-        # question = self.queryset.get(id=pk)
-        serializer = self.serializer_class(
+        serializer = QuestionDetailSerializer(
             self.queryset.filter(id=pk).first(),
             many=False,
         )
@@ -229,14 +228,9 @@ class QuestionsViewSet(GenericViewSet):
                 {"message": f"Question {pk} dont exist "},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        list_answers = question.question_answer.all()
-        answer = {
-            "Text": serializer.data["text"],
-            "All answers": list_answers,
-        }
 
         return Response(
-            answer,
+            serializer.data,
             status=status.HTTP_200_OK,
         )
 
@@ -258,8 +252,52 @@ class QuestionsViewSet(GenericViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+    def destroy(self, request: Request, pk):
+        data = self.queryset.filter(id=pk).first()
+        if str(request.user) == str(data.created_by):
+            data.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
 
-    # def destroy(self, request, *args, **kwargs):
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    # todo
+class AnswerViewSet(GenericViewSet):
+    queryset = Answer.objects.select_related(
+    ).all()
+    serializer_class = AnswerSerializer
+
+    def retrieve(self, request: Request, pk):
+        try:
+            serializer = self.serializer_class(
+            self.queryset.get(id=pk))
+            print(serializer.data)
+            return Response(
+                status=status.HTTP_200_OK,
+            )
+        except Answer.DoesNotExist:
+            return Response(
+                {"message": f"Answer {pk} dont exist "},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+
+    def destroy(self, request: Request, pk):
+        pass
+
+
+class QuestionAnswerViewSet(GenericViewSet):
+    queryset = Answer.objects.all()
+    serializer_class = QuestionSerializer
+
+    # todo
+    def retrieve(self, request: Request, pk):
+        serializer = self.serializer_class(
+            self.queryset.filter(id=pk).first(),
+            many=False,
+        )
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK,
+        )
 
