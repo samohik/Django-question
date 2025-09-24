@@ -7,6 +7,7 @@ class AnswerSerializer(serializers.ModelSerializer):
         format="%Y-%m-%d",
         read_only=True,
     )
+    text = serializers.CharField(required=True)
 
     class Meta:
         model = Answer

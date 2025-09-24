@@ -1,41 +1,37 @@
 services:
-#  django:
-#    # Сборка образа для сервиса django из текущей директории
-#    build: .
-#    # Задание имени контейнера для сервиса django
-#    container_name: django
-#    # Задание команды, которую нужно запустить при запуске контейнера для сервиса django
-#    command:  >
-#      sh -c "python manage.py makemigrations &&
-#              python manage.py migrate &&
-#              python manage.py test &&
-#              python manage.py runserver 0.0.0.0:8000"
-#    # Открытие порта на хостовой машине и перенаправление на порт в контейнере
-#    ports:
-#      - 8000:8000
-#    # Зависимость от другого сервиса
-#    depends_on:
-#      - pgdb
+  django:
+    build: .
+    container_name: django
+    command: >
+      sh -c "python manage.py makemigrations &&
+              python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - pgdb
 
   pgdb:
-    # Использование готового образа postgres
     image: postgres
     restart: always
-
-    shm_size: 128mb
-
-    # Задание переменных окружения для контейнера с postgres
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
+    container_name: pgdb
     volumes:
-      - postgres_data:/var/lib/postgresql/data/
+      - pgdbdata:/var/lib/postgresql/data/
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+
+volumes:
+  pgdbdata: null
+
+
+

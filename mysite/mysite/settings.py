@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "django.contrib.postgres",
 
-
-
     # apps
     "answers.apps.AnswersConfig",
     "question.apps.QuestionConfig",
@@ -109,16 +107,18 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-    # 'ENGINE': 'django.db.backends.postgresql',
-    # 'NAME': 'postgres',
-    # 'USER': 'postgres',
-    # 'PASSWORD': 'postgres',
-    # 'HOST': '5432:5432',  # Or the IP address if PostgreSQL is on a different server
-    # 'PORT': '',
+
+    # For local mode
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'pgdb',  # Or the IP address if PostgreSQL is on a different server
+        'PORT': '5432',
+    }
 }
 
 

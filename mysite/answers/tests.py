@@ -47,7 +47,6 @@ class Base(APITestCase):
         )
 
         #   Answer from user 2 to user 1
-
         self.answer_from_user_two_to_user_one = Answer.objects.create(
         question_id=self.question_from_user_one,
         user_id=self.profile_two,
@@ -56,20 +55,36 @@ class Base(APITestCase):
 
 
 class AnswersAPIView(Base):
-    def test_get(self):
+    def test_get_successful(self):
         url = reverse("answers-detail", kwargs={"pk": 1})
-        response = self.client.get(url)
-        # todo
-        # print(response.data)
-        answer = {}
-        self.assertEqual(response.status_code, 200)
+        with self.assertNumQueries(1):
+            self.client.force_authenticate(user=self.user_two)
+            response = self.client.get(url)
+            answer = {
+                'question_id': self.question_from_user_one.id,
+                'user_id': self.profile_two.id,
+                'text': 'Test',
+                'created_at': self.time,
+            }
+            self.assertEqual(response.data, answer)
+            self.assertEqual(response.status_code, 200)
 
     def test_get_failed(self):
         url = reverse("answers-detail", kwargs={"pk": 2})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 400)
 
-    # def test_delete(self):
-    #     url = reverse("answers-detail", kwargs={"pk": 1})
-    #     response = self.client.delete(url)
-    #     self.assertEqual(response.status_code, 203)
+    def test_delete_successful(self):
+        self.client.force_authenticate(user=self.user_two)
+        url = reverse("answers-detail", kwargs={"pk": 1})
+        response = self.client.delete(url)
+
+        answers = Answer.objects.filter(id=1).first()
+        self.assertFalse(answers)
+        self.assertEqual(response.status_code, 204)
+
+    def test_delete_failed(self):
+        self.client.force_authenticate(user=self.user_one)
+        url = reverse("answers-detail", kwargs={"pk": 1})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)

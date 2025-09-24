@@ -218,21 +218,42 @@ class QuestionViewSet(GenericViewSet):
         )
 
     def retrieve(self, request: Request, pk):
-        serializer = QuestionDetailSerializer(
-            self.queryset.filter(id=pk).first(),
-            many=False,
-        )
-
-        if not serializer:
+        try:
+            serializer = QuestionDetailSerializer(
+                self.queryset.get(id=pk),
+                many=False,
+            )
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK,
+            )
+        except Question.DoesNotExist:
             return Response(
                 {"message": f"Question {pk} dont exist "},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
+    @action(methods=["post"], detail=True,
+            url_name="answers", url_path="answers")
+    def answers(self, request: Request, pk):
+        try:
+            question = self.queryset.get(id=pk)
+
+            serializer = AnswerSerializer(data=request.data)
+            serializer.question_id = question
+            serializer.user_id = request.user
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    serializer.data,
+                    status=status.HTTP_201_CREATED,
+                )
+        except Question.DoesNotExist:
+            return  Response(
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(
@@ -253,25 +274,28 @@ class QuestionViewSet(GenericViewSet):
             )
 
     def destroy(self, request: Request, pk):
-        data = self.queryset.filter(id=pk).first()
-        if str(request.user) == str(data.created_by):
-            data.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_403_FORBIDDEN)
+        try:
+            data = self.queryset.get(id=pk)
+            if str(request.user) == str(data.created_by):
+                data.delete()
+                return Response(status=status.HTTP_204_NO_CONTENT)
+            else:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+
+        except Question.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-    # todo
 class AnswerViewSet(GenericViewSet):
-    queryset = Answer.objects.select_related(
-    ).all()
+    queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
 
     def retrieve(self, request: Request, pk):
         try:
             serializer = self.serializer_class(
             self.queryset.get(id=pk))
-            print(serializer.data)
             return Response(
+                serializer.data,
                 status=status.HTTP_200_OK,
             )
         except Answer.DoesNotExist:
@@ -280,24 +304,20 @@ class AnswerViewSet(GenericViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-
-
     def destroy(self, request: Request, pk):
-        pass
-
-
-class QuestionAnswerViewSet(GenericViewSet):
-    queryset = Answer.objects.all()
-    serializer_class = QuestionSerializer
-
-    # todo
-    def retrieve(self, request: Request, pk):
-        serializer = self.serializer_class(
-            self.queryset.filter(id=pk).first(),
-            many=False,
-        )
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK,
-        )
-
+        try:
+            data = self.queryset.get(id=pk)
+            if str(request.user) == str(data.user_id):
+                data.delete()
+                return Response(
+                    status=status.HTTP_204_NO_CONTENT,
+                )
+            else:
+                return Response(
+                    status=status.HTTP_403_FORBIDDEN,
+                )
+        except Answer.DoesNotExist:
+            return Response(
+                {"message": f"Answer {pk} dont exist "},
+                status=status.HTTP_400_BAD_REQUEST,
+            )

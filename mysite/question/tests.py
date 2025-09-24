@@ -57,10 +57,9 @@ class Base(APITestCase):
 
 class QuestionsAPIView(Base):
     def test_get(self):
-        self.url = reverse("questions-list")
+        url = reverse("questions-list")
         with self.assertNumQueries(1):
-            response = self.client.get(self.url)
-
+            response = self.client.get(url)
             answer = [
                 {
                     'created_by': 'testuser1',
@@ -76,19 +75,19 @@ class QuestionsAPIView(Base):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, answer)
 
-    def test_get_id(self):
+    def test_get_detail(self):
         url = reverse("questions-detail", kwargs={"pk": 1})
         with self.assertNumQueries(2):
 
             response = self.client.get(url)
             answer = {
-                'created_by': 1,
+                'created_by': self.profile_one.id,
                 'text': 'Text for test from user 1',
                 'created_at': self.time,
                 'question_answer': [
                     {
-                        'question_id': 1,
-                        'user_id': 2,
+                        'question_id': self.question_from_user_one.id,
+                        'user_id': self.profile_two.id,
                         'text': 'Test',
                         'created_at': self.time,
                     }
@@ -100,10 +99,10 @@ class QuestionsAPIView(Base):
     def test_post(self):
         self.client.force_authenticate(user=self.user_one)
 
-        self.url = reverse("questions-list")
+        url = reverse("questions-list")
         text = "Test for post from user One"
         response = self.client.post(
-            self.url,
+            url,
             data={"text": text},
         )
 
@@ -114,6 +113,24 @@ class QuestionsAPIView(Base):
         self.assertEqual(question_from_user_one.text, text)
         self.assertEqual(question_from_user_one.created_by, self.profile_one)
         self.assertEqual(response.data, answer)
+
+    def test_post_detail(self):
+        self.client.force_authenticate(user=self.user_two)
+        url = reverse("questions-answers", kwargs={"pk": 1})
+        response = self.client.post(
+            url,
+            data={
+                "question_id": self.question_from_user_one.id,
+                "user_id": self.profile_two.id,
+                "text": "Text for post Detail",
+            }
+        )
+        # Checking New Answer
+        answer = Answer.objects.filter(id=2).first()
+        self.assertEqual(answer.text, "Text for post Detail")
+
+        self.assertEqual(response.status_code, 201)
+
 
     def test_delete_successful(self):
         self.client.force_authenticate(user=self.user_one)
