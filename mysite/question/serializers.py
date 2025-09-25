@@ -5,7 +5,6 @@ from question.models import Question
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    created_by = serializers.CharField(read_only=True)
     text = serializers.CharField(required=True)
     created_at = serializers.DateTimeField(
         format="%Y-%m-%d",

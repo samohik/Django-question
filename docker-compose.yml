@@ -5,33 +5,26 @@ services:
     command: >
       sh -c "python manage.py makemigrations &&
               python manage.py migrate &&
+              python manage.py test &&
               python manage.py runserver 0.0.0.0:8000"
-    volumes:
-      - .:/usr/src/app
     ports:
-      - 8000:8000
-    depends_on:
-      - pgdb
+      - "8000:8000"
 
-  pgdb:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    container_name: pgdb
-    volumes:
-      - pgdbdata:/var/lib/postgresql/data/
+#    volumes:
+#      - .:/usr/src/app
+#    depends_on:
+#      - pgdb
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
-volumes:
-  pgdbdata: null
-
-
-
+#  pgdb:
+#    image: postgres
+#    environment:
+#      - POSTGRES_DB=postgres
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=postgres
+#
+#    container_name: pgdb
+#    volumes:
+#      - pgdbdata:/var/lib/postgresql/data
+#
+#volumes:
+#  pgdbdata: null

@@ -241,7 +241,7 @@ class QuestionViewSet(GenericViewSet):
 
             serializer = AnswerSerializer(data=request.data)
             serializer.question_id = question
-            serializer.user_id = request.user
+            serializer.user_id = self.request.user
 
             if serializer.is_valid():
                 serializer.save()
@@ -249,6 +249,7 @@ class QuestionViewSet(GenericViewSet):
                     serializer.data,
                     status=status.HTTP_201_CREATED,
                 )
+
         except Question.DoesNotExist:
             return  Response(
                 status=status.HTTP_400_BAD_REQUEST,
@@ -257,17 +258,18 @@ class QuestionViewSet(GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data=request.data
+            data={
+                "text": request.data.get("text"),
+                "created_by": self.request.user.id,
+            }
         )
         if serializer.is_valid():
-                user = Profile.objects.get(user=self.request.user.id)
-                serializer.validated_data["created_by"] = user
-                serializer.save()
+            serializer.save()
 
-                return Response(
-                    {"message": "Created"},
-                    status=status.HTTP_201_CREATED,
-                )
+            return Response(
+                {"message": "Created"},
+                status=status.HTTP_201_CREATED,
+            )
 
         return Response(
                 status=status.HTTP_400_BAD_REQUEST,

@@ -62,12 +62,12 @@ class QuestionsAPIView(Base):
             response = self.client.get(url)
             answer = [
                 {
-                    'created_by': 'testuser1',
+                    'created_by': self.profile_one.id,
                     'text': 'Text for test from user 1',
                     'created_at': self.time,
                 },
                 {
-                    'created_by': 'testuser2',
+                    'created_by': self.profile_two.id,
                     'text': 'Text for test from user 2',
                     'created_at': self.time,
                 }
@@ -103,10 +103,15 @@ class QuestionsAPIView(Base):
         text = "Test for post from user One"
         response = self.client.post(
             url,
-            data={"text": text},
+            data={
+                # "created_by": self.user_one.id,
+                "text": text,
+            },
         )
 
-        answer = {"message": "Created"}
+        answer = {
+            "message": "Created",
+        }
         question_from_user_one = Question.objects.get(id=3)
 
         self.assertEqual(response.status_code, 201)
