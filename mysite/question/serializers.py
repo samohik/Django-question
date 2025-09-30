@@ -10,16 +10,16 @@ class QuestionSerializer(serializers.ModelSerializer):
         format="%Y-%m-%d",
         read_only=True,
     )
-    # created_by = serializers.StringRelatedField(
-    #     many=False,
-    #     read_only=True,
-    #     # slug_field='username',
-    # )
+    created_by = serializers.StringRelatedField(
+        many=False,
+        read_only=False,
+    )
 
 
     class Meta:
         model = Question
         fields = [
+            "id",
             "created_by",
             "text",
             "created_at",
@@ -38,6 +38,7 @@ class QuestionDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = [
+            "id",
             "created_by",
             "text",
             "created_at",

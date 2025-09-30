@@ -260,15 +260,13 @@ class QuestionViewSet(GenericViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-            data={
-                "text": request.data.get("text"),
-                "created_by": self.request.user.id,
-            }
+            data=request.data,
         )
-        # print(serializer.initial_data)
         if serializer.is_valid():
+            serializer.validated_data["created_by"] = Profile.objects.get(
+                id=self.request.user.id)
             serializer.save()
-
+            print(serializer.data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,

@@ -14,7 +14,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
-load_dotenv(".env.local")
+load_dotenv("../.env.local")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,13 +118,13 @@ DATABASES = {
     #     default=os.environ.get('DATABASE_URL', 'postgres://postgres:posgres@localhost:5432/postgres')
     # )
 
-    #     'ENGINE': f"django.db.backends.{os.getenv("DB_ENGINE")}",
-    #     'NAME': os.getenv("DB_NAME"),
-    #     'USER': os.getenv("DB_USER"),
-    #     'PASSWORD': os.getenv("DB_PASSWORD"),
-    #     'HOST': os.getenv("DB_HOST"),  # Or the IP address if PostgreSQL is on a different server
-    #     'PORT': os.getenv("DB_PORT"),
-    # }
+#         'ENGINE': f"django.db.backends.{os.getenv("DB_ENGINE")}",
+#         'NAME': os.getenv("DB_NAME"),
+#         'USER': os.getenv("DB_USER"),
+#         'PASSWORD': os.getenv("DB_PASSWORD"),
+#         'HOST': os.getenv("DB_HOST"),  # Or the IP address if PostgreSQL is on a different server
+#         'PORT': os.getenv("DB_PORT"),
+#     }
 }
 
 

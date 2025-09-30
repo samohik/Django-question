@@ -61,6 +61,7 @@ class AnswersAPIView(Base):
             self.client.force_authenticate(user=self.user_two)
             response = self.client.get(url)
             answer = {
+                "id": 1,
                 'question_id': self.question_from_user_one.id,
                 'user_id': self.profile_two.id,
                 'text': 'Test',

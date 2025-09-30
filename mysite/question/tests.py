@@ -61,16 +61,20 @@ class QuestionsAPIView(Base):
             response = self.client.get(url)
             answer = [
                 {
-                    'created_by': self.profile_one.id,
+                    "id": 1,
+                    'created_by': self.profile_one.username,
                     'text': 'Text for test from user 1',
                     'created_at': self.time,
                 },
                 {
-                    'created_by': self.profile_two.id,
+                    "id": 2,
+                    'created_by': self.profile_two.username,
                     'text': 'Text for test from user 2',
                     'created_at': self.time,
                 }
+
             ]
+            # [{
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, answer)
 
@@ -80,11 +84,13 @@ class QuestionsAPIView(Base):
 
             response = self.client.get(url)
             answer = {
+                "id": 1,
                 'created_by': self.profile_one.id,
                 'text': 'Text for test from user 1',
                 'created_at': self.time,
                 'answer_questions': [
                     {
+                        "id": 1,
                         'question_id': self.question_from_user_one.id,
                         'user_id': self.profile_two.id,
                         'text': 'Test',
@@ -96,6 +102,7 @@ class QuestionsAPIView(Base):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, answer)
 
+    #  todo
     def test_post(self):
         self.client.force_authenticate(user=self.user_one)
 
@@ -109,8 +116,9 @@ class QuestionsAPIView(Base):
         )
 
         answer = {
+            "id": 3,
             "text": "Test for post from user One",
-            "created_by": self.profile_one.id,
+            "created_by": self.profile_one.username,
             "created_at": self.time,
         }
         question_from_user_one = Question.objects.get(id=3)
@@ -126,6 +134,7 @@ class QuestionsAPIView(Base):
         response = self.client.post(
             url,
             data={
+                "id": 1,
                 "question_id": self.question_from_user_one.id,
                 "user_id": self.profile_two.id,
                 "text": "Text for post Detail",
