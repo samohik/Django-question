@@ -1,6 +1,5 @@
 import datetime
 
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth.models import User
@@ -58,7 +57,7 @@ class Base(APITestCase):
 class QuestionsAPIView(Base):
     def test_get(self):
         url = reverse("questions-list")
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(2):
             response = self.client.get(url)
             answer = [
                 {
@@ -84,7 +83,7 @@ class QuestionsAPIView(Base):
                 'created_by': self.profile_one.id,
                 'text': 'Text for test from user 1',
                 'created_at': self.time,
-                'question_answer': [
+                'answer_questions': [
                     {
                         'question_id': self.question_from_user_one.id,
                         'user_id': self.profile_two.id,
@@ -93,6 +92,7 @@ class QuestionsAPIView(Base):
                     }
                 ]
             }
+
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, answer)
 
@@ -104,13 +104,14 @@ class QuestionsAPIView(Base):
         response = self.client.post(
             url,
             data={
-                # "created_by": self.user_one.id,
                 "text": text,
             },
         )
 
         answer = {
-            "message": "Created",
+            "text": "Test for post from user One",
+            "created_by": self.profile_one.id,
+            "created_at": self.time,
         }
         question_from_user_one = Question.objects.get(id=3)
 

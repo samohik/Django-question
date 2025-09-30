@@ -10,7 +10,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import (
     ViewSet,
-    GenericViewSet, ModelViewSet,
+    GenericViewSet,
 )
 
 from answers.models import Answer
@@ -204,6 +204,8 @@ class LogoutViewSet(ViewSet):
 class QuestionViewSet(GenericViewSet):
     queryset = Question.objects.select_related(
         "created_by",
+    ).prefetch_related(
+        "answer_questions",
     ).all()
     serializer_class = QuestionSerializer
 
@@ -263,11 +265,12 @@ class QuestionViewSet(GenericViewSet):
                 "created_by": self.request.user.id,
             }
         )
+        # print(serializer.initial_data)
         if serializer.is_valid():
             serializer.save()
 
             return Response(
-                {"message": "Created"},
+                serializer.data,
                 status=status.HTTP_201_CREATED,
             )
 

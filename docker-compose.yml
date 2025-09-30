@@ -10,21 +10,21 @@ services:
     ports:
       - "8000:8000"
 
-#    volumes:
-#      - .:/usr/src/app
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env.local
 #    depends_on:
 #      - pgdb
 
 #  pgdb:
 #    image: postgres
-#    environment:
-#      - POSTGRES_DB=postgres
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres
-#
-#    container_name: pgdb
+#    ports:
+#      - "5432:5432"
 #    volumes:
-#      - pgdbdata:/var/lib/postgresql/data
+#      - postgres_data:/var/lib/postgresql/data
+#    env_file:
+#      - .env.local
 #
 #volumes:
-#  pgdbdata: null
+#  postgres_data:

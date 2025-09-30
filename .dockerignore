@@ -1,0 +1,38 @@
+# Ignore Git-related files and directories
+.git
+.gitignore
+
+# Ignore common IDE and editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore build artifacts and temporary files
+build/
+dist/
+target/
+*.log
+*.tmp
+temp/
+
+# Ignore dependency management directories for common languages
+node_modules/  # For Node.js projects
+venv/          # For Python virtual environments
+vendor/        # For Go or PHP projects
+
+# Ignore environment variable files
+.env
+.env.*
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore documentation and test files if not needed in the final image
+docs/
+tests/
+
+# Ignore Docker-related files that are not part of the image content
+Dockerfile
+docker-compose.yml

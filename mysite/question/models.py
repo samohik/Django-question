@@ -7,6 +7,7 @@ class Question(models.Model):
     created_by = models.ForeignKey(
         Profile,
         verbose_name="Created by",
+        related_name="question_profiles",
         on_delete=models.CASCADE,
     )
     text = models.TextField(

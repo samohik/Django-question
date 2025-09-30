@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
-import dj_database_url
+from dotenv import load_dotenv
+
+
+load_dotenv(".env.local")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-=4e%ww#z)c#z0@be0$7!##0w+&xphy4y!0budh0mk8@5q@9ih3'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,9 +37,7 @@ INTERNAL_IPS = [
     # ...
 ]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -117,12 +118,12 @@ DATABASES = {
     #     default=os.environ.get('DATABASE_URL', 'postgres://postgres:posgres@localhost:5432/postgres')
     # )
 
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'postgres',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'postgres',
-    #     'HOST': 'pgdb',  # Or the IP address if PostgreSQL is on a different server
-    #     'PORT': '5432',
+    #     'ENGINE': f"django.db.backends.{os.getenv("DB_ENGINE")}",
+    #     'NAME': os.getenv("DB_NAME"),
+    #     'USER': os.getenv("DB_USER"),
+    #     'PASSWORD': os.getenv("DB_PASSWORD"),
+    #     'HOST': os.getenv("DB_HOST"),  # Or the IP address if PostgreSQL is on a different server
+    #     'PORT': os.getenv("DB_PORT"),
     # }
 }
 

@@ -9,7 +9,7 @@ class Answer(models.Model):
         Question,
         verbose_name="Question ID",
         on_delete=models.CASCADE,
-        related_name="question_answer",
+        related_name="answer_questions",
         blank=True,
         null=True,
     )
@@ -17,7 +17,7 @@ class Answer(models.Model):
         Profile,
         verbose_name="User ID",
         on_delete=models.CASCADE,
-        related_name="user_answer",
+        related_name="answer_users",
         blank=True,
         null=True,
     )
