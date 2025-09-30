@@ -8,6 +8,14 @@ class AnswerSerializer(serializers.ModelSerializer):
         read_only=True,
     )
     text = serializers.CharField(required=True)
+    question_id = serializers.PrimaryKeyRelatedField(
+        many=False,
+        read_only=True,
+    )
+    user_id = serializers.PrimaryKeyRelatedField(
+        many=False,
+        read_only=True,
+    )
 
     class Meta:
         model = Answer
@@ -18,5 +26,7 @@ class AnswerSerializer(serializers.ModelSerializer):
             "text",
             "created_at",
         ]
+
+
 
 

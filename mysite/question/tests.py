@@ -102,7 +102,6 @@ class QuestionsAPIView(Base):
             self.assertEqual(response.status_code, 200)
             self.assertEqual(response.data, answer)
 
-    #  todo
     def test_post(self):
         self.client.force_authenticate(user=self.user_one)
 
@@ -134,16 +133,17 @@ class QuestionsAPIView(Base):
         response = self.client.post(
             url,
             data={
-                "id": 1,
-                "question_id": self.question_from_user_one.id,
-                "user_id": self.profile_two.id,
                 "text": "Text for post Detail",
             }
         )
-        # Checking New Answer
-        answer = Answer.objects.filter(id=2).first()
-        self.assertEqual(answer.text, "Text for post Detail")
-
+        result = {
+            "id": 2,
+            "question_id": self.question_from_user_one.id,
+            "user_id": self.profile_two.id,
+            "text": "Text for post Detail",
+            "created_at": self.time,
+        }
+        self.assertEqual(response.data, result)
         self.assertEqual(response.status_code, 201)
 
 

@@ -240,12 +240,14 @@ class QuestionViewSet(GenericViewSet):
     def answers(self, request: Request, pk):
         try:
             question = self.queryset.get(id=pk)
-
             serializer = AnswerSerializer(data=request.data)
-            serializer.question_id = question
-            serializer.user_id = self.request.user
 
             if serializer.is_valid():
+                serializer.validated_data["question_id"] = question
+                serializer.validated_data["user_id"] = Profile.objects.get(
+                    id=self.request.user.id,
+                )
+
                 serializer.save()
                 return Response(
                     serializer.data,
@@ -266,7 +268,6 @@ class QuestionViewSet(GenericViewSet):
             serializer.validated_data["created_by"] = Profile.objects.get(
                 id=self.request.user.id)
             serializer.save()
-            print(serializer.data)
             return Response(
                 serializer.data,
                 status=status.HTTP_201_CREATED,
